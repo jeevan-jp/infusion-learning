@@ -3,8 +3,8 @@ fluid.defaults("theNamespace.helloWorld", {
     model: {
         message: "Don't want to say Hello World"
     },
-    listeners: {
-        "onCreate.onn": "{that}.sayHello"
+    modelListeners: {
+        message: "{that}.sayHello"
     },
     invokers: {
         // Creates a function on the component
@@ -25,8 +25,15 @@ theNamespace.helloWorld.consoleHello = (message) => {
 }
 
 $(document).ready(() => {
-    theNamespace.helloWorld({});
-});
+    helloWorld = theNamespace.helloWorld();
+
+    setTimeout(()=>{
+        helloWorld.applier.change("message", "Hello, brave new Infusion world!");
+        setTimeout(()=>{
+            helloWorld.applier.change("message", "Goodbye! See you again soon.");
+        }, 2000);
+    }, 2000);
+})
 // Enable visible log messages in the console
 // fluid.setLogging(true);
 // Create an instance of the component
