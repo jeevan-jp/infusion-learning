@@ -1,5 +1,8 @@
 fluid.defaults("theNamespace.helloWorld", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        message: "Don't want to say Hello World"
+    },
     listeners: {
         "onCreate.onn": "{that}.sayHello"
     },
@@ -11,7 +14,7 @@ fluid.defaults("theNamespace.helloWorld", {
             // a free function
             funcName: "theNamespace.helloWorld.consoleHello",
             // Configures the arguments to pass to the function
-            args: ["Hello, World!"]
+            args: ["{that}.model.message"]
         }
     }
 });
