@@ -6,3 +6,4 @@ Infusion framework's demo programs covering following topics -
 * Listeners
 * Model Component
 * Model Listeners
+* View Component

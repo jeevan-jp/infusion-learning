@@ -1,10 +1,16 @@
 fluid.defaults("theNamespace.helloWorld", {
-    gradeNames: ["fluid.modelComponent"],
+    gradeNames: ["fluid.viewComponent"],
     model: {
         message: "Don't want to say Hello World"
     },
     modelListeners: {
         message: "{that}.sayHello"
+    },
+    selectors: {
+        messageArea: ".flc-messageArea",
+    },
+    listeners: {
+        "onCreate.displayHello": "{that}.displayHello"
     },
     invokers: {
         // Creates a function on the component
@@ -14,6 +20,11 @@ fluid.defaults("theNamespace.helloWorld", {
             // a free function
             funcName: "theNamespace.helloWorld.consoleHello",
             // Configures the arguments to pass to the function
+            args: ["{that}.model.message"]
+        },
+        displayHello: {
+            "this": "{that}.dom.messageArea",
+            method: "html",
             args: ["{that}.model.message"]
         }
     }
@@ -25,16 +36,5 @@ theNamespace.helloWorld.consoleHello = (message) => {
 }
 
 $(document).ready(() => {
-    helloWorld = theNamespace.helloWorld();
-
-    setTimeout(()=>{
-        helloWorld.applier.change("message", "Hello, brave new Infusion world!");
-        setTimeout(()=>{
-            helloWorld.applier.change("message", "Goodbye! See you again soon.");
-        }, 2000);
-    }, 2000);
+    var helloWorld = theNamespace.helloWorld(".helloWorld", {});
 })
-// Enable visible log messages in the console
-// fluid.setLogging(true);
-// Create an instance of the component
-// var myComponent = examples.tinyComponent();
