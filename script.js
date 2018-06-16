@@ -1,27 +1,45 @@
-fluid.defaults("theNamespace.helloWorld", {
-    gradeNames: ["fluid.viewComponent"],
+fluid.defaults("fluidTutorial.helloWorld.consoleHello", {
+    gradeNames: ["fluid.modelComponent"],
+    // We define a default message here so that
+    // this component is fully independent and
+    // could be used on its own
     model: {
-        message: "Don't want to say Hello World"
+        message: "Hello, Console World!"
     },
     modelListeners: {
         message: "{that}.sayHello"
     },
-    selectors: {
-        messageArea: ".flc-messageArea",
+    invokers: {
+        sayHello: {
+            funcName: "fluidTutorial.helloWorld.consoleHello.sayHello",
+            // Here, "{that}" means the context of the current
+            // component configuration (consoleHello)
+            args: ["{that}.model.message"]
+        }
+    }
+});
+
+// We'll update the name of the associated function at the same time.
+fluidTutorial.helloWorld.consoleHello.sayHello = function (message) {
+    console.log(message);
+};
+
+// The web page hello functionality is now defined as a separate component.
+fluid.defaults("fluidTutorial.helloWorld.displayHello", {
+    gradeNames: ["fluid.viewComponent"],
+    // We define a default message here so that
+    // this component is fully independent and
+    // could be used on its own
+    model: {
+        message: "Hello, Web Page World!"
     },
-    listeners: {
-        "onCreate.displayHello": "{that}.displayHello"
+    selectors: {
+        messageArea: ".flc-messageArea"
+    },
+    modelListeners: {
+        message: "{that}.displayHello"
     },
     invokers: {
-        // Creates a function on the component
-        // referred to by name 'sayHello'
-        sayHello: {
-            // The value of "funcName" is the full name of
-            // a free function
-            funcName: "theNamespace.helloWorld.consoleHello",
-            // Configures the arguments to pass to the function
-            args: ["{that}.model.message"]
-        },
         displayHello: {
             "this": "{that}.dom.messageArea",
             method: "html",
@@ -30,11 +48,53 @@ fluid.defaults("theNamespace.helloWorld", {
     }
 });
 
-theNamespace.helloWorld.consoleHello = (message) => {
-    console.log(message);
-    $('.flc-messageArea').html(`<h3 style="color:red;">${message}</h3>`);
-}
+fluid.defaults("fluidTutorial.helloWorld", {
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        message: "Hello, World!"
+    },
+    listeners: {
+        "onCreate.announceSelf": {
+            "this": "console",
+            method: "log",
+            args: ["The helloWorld Component is ready"]
+        }
+    },
+    components: {
+        consoleHello: {
+            type: "fluidTutorial.helloWorld.consoleHello",
+            options: {
+                model: {
+                    message: "{helloWorld}.model.message"
+                }
+            }
+        },
+        displayHello: {
+            type: "fluidTutorial.helloWorld.displayHello",
+            container: ".helloWorld",
+            options: {
+                model: {
+                    message: "{helloWorld}.model.message"
+                }
+            }
+        }
+    }
+});
 
-$(document).ready(() => {
-    var helloWorld = theNamespace.helloWorld(".helloWorld", {});
-})
+// fluidTutorial.helloWorld.consoleHello = (message) => {
+//     console.log(message);
+// }
+
+$(document).ready(()=> {
+    var helloWorld = fluidTutorial.helloWorld({
+        model: {
+            message: "Hello, restructured component world!"
+        }
+    });
+    
+    helloWorld = fluidTutorial.helloWorld.consoleHello({});
+
+    setTimeout(() => {
+        helloWorld = fluidTutorial.helloWorld.displayHello('.helloWorld', {});
+    }, 2000);
+});
