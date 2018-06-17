@@ -11,3 +11,4 @@ Infusion framework's demo programs covering following topics -
 * Restructuring Component
 * Overriding invokers and Refactoring
 * Extending design with existing component
+* Transforming model relays

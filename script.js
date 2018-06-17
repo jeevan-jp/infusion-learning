@@ -1,3 +1,5 @@
+var helloWorld;
+
 fluid.defaults("fluidTutorial.helloWorld.sayHello", {
     gradeNames: ["fluid.modelComponent"],
     model: {
@@ -41,17 +43,9 @@ fluid.defaults("fluidTutorial.helloWorld.displayHello", {
 
 
 fluid.defaults("fluidTutorial.helloWorld.speakHello", {
-    // This component has all of the characteristics of sayHello,
-    // except for its implementation in the invoker
-    // We also "mix in" the fluid.textToSpeech component to give it
-    // the capability to access the browser's text to speech interface
     gradeNames: ["fluid.textToSpeech", "fluidTutorial.helloWorld.sayHello"],
     invokers: {
         sayHello: {
-            // This style of Invoker allows us to refer to another
-            // existing invoker using IoC references - in this case the
-            // "queueSpeech" invoker that we have access to from mixing
-            // in the fluid.textToSpeech grade
             "func": "{that}.queueSpeech",
             args: ["{that}.model.message"]
         }
@@ -61,7 +55,7 @@ fluid.defaults("fluidTutorial.helloWorld.speakHello", {
 fluid.defaults("fluidTutorial.helloWorld", {
     gradeNames: ["fluid.modelComponent"],
     model: {
-        message: "Hello, World!"
+        message: "Hello, World"
     },
     listeners: {
         "onCreate.announceSelf": {
@@ -95,24 +89,49 @@ fluid.defaults("fluidTutorial.helloWorld", {
                     message: "{helloWorld}.model.message"
                 }
             }
+        },
+        reverseSpeakHello: {
+            type: "fluidTutorial.helloWorld.speakHello",
+            options: {
+                // We use what is referred to as the "explicit"
+                // model relay style here, one that is more verbose
+                // but allows us many more options, including
+                // passing the relayed input through a transforming
+                // function
+                modelRelay: {
+                    // A keyword name for the relay rule
+                    messageReverse: {
+                        singleTransform: {
+                            // The input value whose changes this
+                            // relay rule should coordinate
+                            //
+                            // In this case, an IoC reference to the
+                            // 'message' value of the parent component
+                            input: "{helloWorld}.model.message",
+                            // The function to call to transform
+                            // the input
+                            type: "fluidTutorial.helloWorld.reverseString"
+                        },
+                        // The target point on the component model
+                        // where the transformed value will be relayed
+                        target: "message"
+                    }
+                }
+            }
         }
+
     }
 });
 
-// fluidTutorial.helloWorld.consoleHello = (message) => {
-//     console.log(message);
-// }
+// This new function reverses and returns a string
+fluidTutorial.helloWorld.reverseString = function (str) {
+    return str.split("").reverse().join("");
+};
 
 $(document).ready(()=> {
-    var helloWorld = fluidTutorial.helloWorld({
+    helloWorld = fluidTutorial.helloWorld({
         model: {
-            message: "Hello, restructured component world!"
+            message: "Hello, world!"
         }
     });
-    
-    helloWorld = fluidTutorial.helloWorld.consoleHello({});
-
-    setTimeout(() => {
-        helloWorld = fluidTutorial.helloWorld.displayHello('.helloWorld', {});
-    }, 2000);
 });
