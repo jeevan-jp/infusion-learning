@@ -8,3 +8,4 @@ Infusion framework's demo programs covering following topics -
 * Model Listeners
 * View Component
 * Subcomponents and model relaying
+* Restructuring Component
