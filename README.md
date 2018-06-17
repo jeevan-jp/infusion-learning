@@ -9,3 +9,4 @@ Infusion framework's demo programs covering following topics -
 * View Component
 * Subcomponents and model relaying
 * Restructuring Component
+* Extending design with existing component

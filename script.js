@@ -1,17 +1,27 @@
-fluid.defaults("fluidTutorial.helloWorld.consoleHello", {
+fluid.defaults("fluidTutorial.helloWorld.sayHello", {
     gradeNames: ["fluid.modelComponent"],
-    // We define a default message here so that
-    // this component is fully independent and
-    // could be used on its own
     model: {
-        message: "Hello, Console World!"
+        message: "Hello, world!"
     },
     modelListeners: {
         message: "{that}.sayHello"
     },
     invokers: {
+        // fluid.notImplemented is a function that specifically represents
+        // an unimplemented function that components deriving from this
+        // grade are intended to implement; this is called an "abstract
+        // method" in Java
+        sayHello: "fluid.notImplemented"
+    }
+});
+
+fluid.defaults("fluidTutorial.helloWorld.consoleHello", {
+    // This component has all of the characteristics of sayHello,
+    // except for its implementation in the invoker
+    gradeNames: ["fluidTutorial.helloWorld.sayHello"],
+    invokers: {
         sayHello: {
-            funcName: "fluidTutorial.helloWorld.consoleHello.sayHello",
+            "funcName": "fluidTutorial.helloWorld.consoleHello.sayHello",
             // Here, "{that}" means the context of the current
             // component configuration (consoleHello)
             args: ["{that}.model.message"]
@@ -19,28 +29,28 @@ fluid.defaults("fluidTutorial.helloWorld.consoleHello", {
     }
 });
 
-// We'll update the name of the associated function at the same time.
 fluidTutorial.helloWorld.consoleHello.sayHello = function (message) {
     console.log(message);
 };
 
-// The web page hello functionality is now defined as a separate component.
 fluid.defaults("fluidTutorial.helloWorld.displayHello", {
-    gradeNames: ["fluid.viewComponent"],
-    // We define a default message here so that
-    // this component is fully independent and
-    // could be used on its own
-    model: {
-        message: "Hello, Web Page World!"
-    },
+    // This component has all of the characteristics of sayHello,
+    // except for its implementation in the invoker; additionally:
+    //
+    // 1) It adds the fluid.viewComponent grade to the gradeNames
+    // array to give it the DOM binding capabilities of a viewComponent;
+    // when multiple grade name are supplied in the array, their
+    // configurations are combined in left to right order, with the
+    // rightmost configuration taking precedence if there is a
+    // duplication of keys at the same place in the configuration
+    //
+    // 2) It adds a selector for the messageArea
+    gradeNames: ["fluidTutorial.helloWorld.sayHello", "fluid.viewComponent"],
     selectors: {
         messageArea: ".flc-messageArea"
     },
-    modelListeners: {
-        message: "{that}.displayHello"
-    },
     invokers: {
-        displayHello: {
+        sayHello: {
             "this": "{that}.dom.messageArea",
             method: "html",
             args: ["{that}.model.message"]
